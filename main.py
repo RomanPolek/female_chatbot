@@ -284,9 +284,9 @@ while True:
         timer += 0.1
 
         #if no message for 120 seconds, go next
-        if timer > 600:
+        if timer > 60:
             send_response("Respond something or I will go next... You have 30 seconds.")
-        if timer > 900:
+        if timer > 90:
             print("No message for 90 seconds, going next...")
             re = True
             break
