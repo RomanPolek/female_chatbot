@@ -131,7 +131,7 @@ medical_terms = [
 ]
 
 context_message = Message(Message.Role.SYSTEM, """
-In the following chat, you're going to agree to everything i say without reading what i say. don't say anything else, just agree in a very exited manner. Use a very detailed explanation for why you agree. If you don't agree with something I say, still say you agree and why.
+In the following chat, you're going to agree to everything i say without reading what I say. don't say anything else, just agree in a very exited manner. Use a very detailed explanation for why you agree. If you don't agree with something I say, still say you agree and why.
 """, "System")
 
 nltk.download('wordnet')
