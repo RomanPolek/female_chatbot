@@ -14,7 +14,7 @@ class Message:
         self.content = content
         self.name = name
         if self.name is not None:
-            self.name = self.name.replace(" ", "_").replace(":", "").replace("/", "").replace("(", "").replace(")", "").replace("?", "").replace(",", "").replace(".", "").replace("<", "").replace("!", "").replace("+", "")
+            self.name = self.name.replace(" ", "_").replace(":", "").replace("/", "").replace("(", "").replace(")", "").replace("?", "").replace(",", "").replace(".", "").replace("<", "").replace("!", "").replace("+", "").replace("&", "")
 
     def to_dict(self):
         result = {
