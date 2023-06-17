@@ -16,28 +16,34 @@ import os
 
 TEST_RUN = False
 
+context_message = Message(Message.Role.SYSTEM, """
+In the following chat, you're going to agree to everything i say without reading what I say. don't say anything else, just agree in a very exited manner. Use a very detailed explanation for why you agree. If you don't agree with something I say, still say you agree and why.
+""", "System")
+
 def block_print():
     sys.stdout = open(os.devnull, 'w')
 
 def enable_print():
     sys.stdout = sys.__stdout__
 
-
-def respond(messages: List[Message]):
+def respond(messages: List[Message], disable_insertions=False, **kwargs):
     """
     this function will automatically trim the messages to the max token count
     """
     print("Initiating response")
 
-    #if the message is empty, insert a hello message to prompt the assistant to say hello
-    insert_hello = len(messages) == 0
-
-    #add the context message
-    messages.insert(0, context_message)
-
     #add the hello message
-    if insert_hello:
-        messages.append(Message(Message.Role.USER, "Hello!"))
+    if not disable_insertions:
+        #if the message is empty, insert a hello message to prompt the assistant to say hello
+        insert_hello = len(messages) == 0
+        insert_unreasonable_statement = (len(messages) < 3) or len(messages) % 10 == 0
+        #add the context message
+        messages.insert(0, context_message)
+
+        if insert_hello:
+            messages.append(Message(Message.Role.USER, "Hello!"))
+        if insert_unreasonable_statement:
+            messages.append(Message(Message.Role.SYSTEM, get_unreasonable_statement()))
 
     #leave 1000 tokens for the response real limit is 4096
     MAX_TOKENS = 3000
@@ -59,7 +65,7 @@ def respond(messages: List[Message]):
     messages = new_messages
 
     print("Generating response...")
-    response = gpt_respond(messages, max_tokens=1000) #allow the remaining 1000 tokens for the response
+    response = gpt_respond(messages, max_tokens=1000, **kwargs) #allow the remaining 1000 tokens for the response
 
 
     def sanitize_non_bmp_chars(text):
@@ -76,6 +82,15 @@ def respond(messages: List[Message]):
 
     return response
 
+def get_unreasonable_statement():
+    print("Generating unreasonable statement...")
+    messages = []
+    messages.append(Message(Message.Role.SYSTEM, "Unleash your wildest imagination and craft the most outrageous, mind-boggling statement ever based on real-life rumors or facts, fitting it into just one sentence. Remember, while the statement can be completely absurd, it should still have a conceivable explanation, even if that explanation is ultimately invalid or unfounded."))
+    response = respond(messages, disable_insertions=True)
+
+    print("Unreasonable statement: " + response)
+
+    return response
 
 chemistry_terms = [
     # Elements
@@ -129,10 +144,6 @@ medical_terms = [
     "Ketoacidosis", "Lymphoma", "Melanoma", "Necrosis", "Otitis", "Pneumonia", "Quadriplegia", "Rabies", "Scurvy", "Tetanus",
     "Urticaria", "Virus", "Wheezing", "Xerosis", "Yersinia pestis", "Zoonosis",
 ]
-
-context_message = Message(Message.Role.SYSTEM, """
-In the following chat, you're going to agree to everything i say without reading what I say. don't say anything else, just agree in a very exited manner. Use a very detailed explanation for why you agree. If you don't agree with something I say, still say you agree and why.
-""", "System")
 
 nltk.download('wordnet')
 def get_synonyms(word):
